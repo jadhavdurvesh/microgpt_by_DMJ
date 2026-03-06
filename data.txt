@@ -3784,7 +3784,7 @@ Credits: Judith Boss, Christy Phillips, Lynn Hanninen and David Meltzer. HTML ve
         Further corrections by Menno de Leeuw.
 
 
-*** START OF THE PROJECT GUTENBERG EBOOK FRANKENSTEIN; OR, THE MODERN PROMETHEUS ***
+
 
 Frankenstein;
 
@@ -11147,7 +11147,7 @@ lost in darkness and distance.
 
 
 
-*** END OF THE PROJECT GUTENBERG EBOOK FRANKENSTEIN; OR, THE MODERN PROMETHEUS ***
+
 
 
 

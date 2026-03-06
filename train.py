@@ -1,22 +1,19 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import sentencepiece as spm
+
+# load tokenizer
+sp = spm.SentencePieceProcessor()
+sp.load("tokenizer.model")
 
 text = open("data.txt", encoding="utf-8").read()
 
-chars = sorted(list(set(text)))
-vocab_size = len(chars)
+tokens = sp.encode(text)
 
-stoi = {ch:i for i,ch in enumerate(chars)}
-itos = {i:ch for ch,i in stoi.items()}
+data = torch.tensor(tokens, dtype=torch.long)
 
-def encode(s):
-    return [stoi[c] for c in s]
-
-def decode(l):
-    return ''.join([itos[i] for i in l])
-
-data = torch.tensor(encode(text), dtype=torch.long)
+vocab_size = sp.get_piece_size()
 
 block_size = 128
 embed_size = 128
@@ -162,8 +159,7 @@ for step in range(steps):
 
 torch.save({
     "model_state":model.state_dict(),
-    "stoi":stoi,
-    "itos":itos
+    "tokenizer":"tokenizer.model"
 },"model.pth")
 
 print("training complete")
