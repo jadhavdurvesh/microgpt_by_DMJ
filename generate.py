@@ -1,20 +1,20 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+import sentencepiece as spm
+
+# load tokenizer
+sp = spm.SentencePieceProcessor()
+sp.load("tokenizer.model")
 
 checkpoint = torch.load("model.pth")
 
-stoi = checkpoint["stoi"]
-itos = checkpoint["itos"]
+vocab_size = sp.get_piece_size()
 
-vocab_size = len(stoi)
-
-block_size = 128
-embed_size = 128
+block_size = 64
+embed_size = 64
 heads = 4
 layers = 2
-
-
 class Head(nn.Module):
 
     def __init__(self, head_size):
@@ -134,12 +134,10 @@ model.eval()
 
 
 def encode(s):
-    return [stoi[c] for c in s]
+    return sp.encode(s)
 
-
-def decode(l):
-    return ''.join([itos[i] for i in l])
-
+def decode(t):
+    return sp.decode(t)
 
 prompt = input("Enter prompt: ")
 

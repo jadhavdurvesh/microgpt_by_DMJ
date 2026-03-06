@@ -3,7 +3,17 @@ import torch.nn as nn
 import torch.nn.functional as F
 import sentencepiece as spm
 
-# load tokenizer
+# ----------------------------
+# Device (GPU if available)
+# ----------------------------
+
+device = "cuda" if torch.cuda.is_available() else "cpu"
+print("Using device:", device)
+
+# ----------------------------
+# Load tokenizer
+# ----------------------------
+
 sp = spm.SentencePieceProcessor()
 sp.load("tokenizer.model")
 
@@ -15,11 +25,19 @@ data = torch.tensor(tokens, dtype=torch.long)
 
 vocab_size = sp.get_piece_size()
 
-block_size = 128
-embed_size = 128
+# ----------------------------
+# Model parameters
+# ----------------------------
+
+block_size = 64
+embed_size = 64
 heads = 4
 layers = 2
+batch_size = 16
 
+# ----------------------------
+# Attention Head
+# ----------------------------
 
 class Head(nn.Module):
 
@@ -37,7 +55,7 @@ class Head(nn.Module):
 
     def forward(self, x):
 
-        T = x.shape[0]
+        B, T, C = x.shape
 
         k = self.key(x)
         q = self.query(x)
@@ -52,6 +70,10 @@ class Head(nn.Module):
 
         return weights @ v
 
+
+# ----------------------------
+# Multi-head attention
+# ----------------------------
 
 class MultiHead(nn.Module):
 
@@ -71,6 +93,10 @@ class MultiHead(nn.Module):
         return self.proj(out)
 
 
+# ----------------------------
+# Feedforward
+# ----------------------------
+
 class FeedForward(nn.Module):
 
     def __init__(self):
@@ -85,6 +111,10 @@ class FeedForward(nn.Module):
     def forward(self,x):
         return self.net(x)
 
+
+# ----------------------------
+# Transformer block
+# ----------------------------
 
 class Block(nn.Module):
 
@@ -106,6 +136,10 @@ class Block(nn.Module):
 
         return x
 
+
+# ----------------------------
+# Mini GPT Model
+# ----------------------------
 
 class MiniGPT(nn.Module):
 
@@ -131,30 +165,40 @@ class MiniGPT(nn.Module):
         return self.head(x)
 
 
-model = MiniGPT()
+model = MiniGPT().to(device)
 
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 loss_fn = nn.CrossEntropyLoss()
 
-steps = 20000
+# ----------------------------
+# Training
+# ----------------------------
+
+steps = 10000
 
 for step in range(steps):
 
-    start = torch.randint(len(data)-block_size,(1,)).item()
+    ix = torch.randint(len(data)-block_size, (batch_size,))
 
-    x = data[start:start+block_size]
-    y = data[start+1:start+block_size+1]
+    x = torch.stack([data[i:i+block_size] for i in ix])
+    y = torch.stack([data[i+1:i+block_size+1] for i in ix])
+
+    x = x.to(device)
+    y = y.to(device)
 
     logits = model(x)
 
-    loss = loss_fn(logits.view(-1,vocab_size), y.view(-1))
+    loss = loss_fn(
+        logits.view(-1,vocab_size),
+        y.view(-1)
+    )
 
     optimizer.zero_grad()
     loss.backward()
     optimizer.step()
 
-    if step%500==0:
-        print(step,loss.item())
+    if step % 500 == 0:
+        print(step, loss.item())
 
 
 torch.save({
