@@ -1,121 +1,165 @@
-# Saudade v3
+# Saudade v4
 
-A properly-engineered classic Transformer, evolved from the original
-MiniGPT prototype in this repo. Still a small, from-scratch, decoder-only
-model — no RoPE, GQA, MoE, Flash Attention, KV-cache, or SwiGLU. Those are
-left for v4/v5. v3's question is: *how much better does the original
-architecture get once it's engineered properly and trained on the real
-MicroCorpus v2 (98,574,591 actual tokens, measured with the 16K tokenizer —
-not the earlier word-count estimate)?*
+The "Option A" upgrade from the roadmap: a modern block (RoPE, RMSNorm,
+SwiGLU, PyTorch's fused attention kernel) on a deliberately still-small
+model (~20-30M params), trained on a bigger, quality-checked corpus. The
+question v4 answers is *"does the modern block actually help, at roughly
+the same scale?"* — not "how big can we make it."
 
-With `batch_size=32`, `block_size=256` (8,192 tokens/step) and
-`TRAIN_CONFIG["steps"]=36000`, that's ~12,033 steps per full pass over the
-90% training split and ~3 passes total — `train.py` prints this breakdown
-(and the real token count it's based on) at the start of every run, computed
-from the actual corpus rather than hard-coded.
+**v3 is frozen as the baseline.** This lives in its own `saudade_v4/`
+directory; nothing here touches `saudade_v3/`. v3's final numbers
+(8.9M params, 98.55M tokens, best val loss **3.7963**) are what v4 needs to
+beat before anything from here graduates past "experiment."
 
-## What changed vs. the original
+## Full history: v1 → v2 → v3 → v4
 
-| | v1 (original) | v3 |
+v1 and v2 predate this repo's checkpoint-metadata/logging conventions, so
+their numbers below come from reading their actual training scripts
+directly (`microgpt_by_DMJ-master.zip` for v1, the v2 Kaggle notebook for
+v2) rather than from a saved run report. Two honest gaps: **v2's Kaggle
+notebook has no saved cell outputs**, so there's no recorded final loss or
+measured corpus token count for it — only its architecture, which is fully
+determined by the code. And v2's notebook only overrode `train.py`; it left
+`train_tokenizer.py` as whatever was in the repo at the time, which is the
+2,000-vocab tokenizer also used by v1 — noted below as an assumption, not
+a confirmed fact.
+
+| | v1 (original) | v2 | v3 | v4 |
+|---|---|---|---|---|
+| corpus | small sample corpus (~108K words) | "100-book corpus" (per notebook; not measured) | MicroCorpus v2: 1,033 books, 98.55M actual tokens | 10,000 books, quality-ranked |
+| tokenizer | 2,000 vocab BPE | 2,000 vocab BPE *(assumed — not overridden in the v2 notebook)* | 16,000 vocab BPE | benchmarked 16K/32K/50K |
+| context | 64 | 256 | 256 | 512 |
+| embedding | 64 | 512 | 256 | 384 |
+| heads | 4 | 8 | 8 | 8 |
+| layers | 2 | 8 | 6 | 8 |
+| parameters | ~0.36M | ~27.3M *(bigger than v3, on a much smaller tokenizer)* | ~8.9M | ~26.5M |
+| position encoding | none | none | learned embeddings | RoPE |
+| normalization | LayerNorm | LayerNorm | LayerNorm | RMSNorm |
+| FFN | ReLU, 4x | ReLU, 4x | GELU, 4x | SwiGLU, ~2.67x |
+| attention | hand-written | hand-written | hand-written | `scaled_dot_product_attention` |
+| optimizer | Adam, fixed lr=0.001 | Adam, fixed lr=0.001 | AdamW, warmup+cosine | AdamW, warmup+cosine |
+| dropout | none | none | 0.1 | 0.1 |
+| weight tying | no | no | yes | yes |
+| train/val split | none (trains on 100%) | none | 90/10 (v3 notebook fix: ~99/1) | 98/2, memory-mapped |
+| dataset loading | full corpus into RAM | full corpus into RAM | full corpus into RAM (until the streaming-tokenization fix) | streaming → memory-mapped from the start |
+| multi-GPU | no | yes (`DataParallel`) | yes (`DataParallel`) | yes (`DataParallel`) |
+| checkpointing | final only | final only | periodic + best-val-loss, resumable | periodic + best-val-loss, resumable |
+| progress tracking | steps, printed every 500 | steps, printed every 500 | steps | steps + tokens seen |
+| training steps | 10,000 (fixed) | 10,000 (fixed) | 24,000 (~3 passes) | measured from actual token count |
+| generation | temperature only, blocking `input()` | *(not rewritten — inherited v1's `generate.py`, and would have hit the size-mismatch bug against v2's bigger `train.py`)* | temp + top-k + top-p + repetition penalty + greedy | same as v3 |
+| final / best val loss | not tracked (no val split) | not recorded (no saved outputs) | best 3.7963 | TBD |
+
+The v2 row is the clearest illustration of why v3 introduced a single
+shared `config.py`: v2 quietly became a **27M-parameter model on a
+2,000-word vocabulary** — bigger than v3 ended up being — with no
+positional embeddings, no val loss, and a `generate.py` that was never
+updated to match, so it would have failed with a state-dict size mismatch
+the moment anyone tried to actually generate from it.
+
+## What changed vs. v3
+
+| | v3 | v4 |
 |---|---|---|
-| context (`block_size`) | 64 | 256 |
-| embedding (`embed_size`) | 64 | 256 |
-| attention heads | 4 | 8 |
-| layers | 2 | 6 |
-| positional info | none | learned position embeddings |
-| activation | ReLU | GELU |
-| dropout | none | 0.1 |
-| optimizer | Adam | AdamW + weight decay |
-| LR schedule | fixed | warmup → cosine decay |
-| gradient clipping | none | max norm 1.0 |
-| precision | FP32 | mixed precision (bf16 autocast) |
-| train/val split | none (trains on 100%) | 90/10 |
-| checkpoints | final only | periodic, resumable |
-| output/embedding weights | separate | tied |
-| generation | temperature only, blocking `input()` | temperature + top-k + top-p, prompt set in-script |
-| config | scattered constants | single `config.py`, saved into every checkpoint |
-| residual-branch init | default | GPT-2-style scaled init (std / sqrt(2·layers)) |
-| weight decay | none | AdamW, decay only on matrices (not biases/LayerNorm) |
-| effective batch size | fixed at `batch_size` | gradient accumulation (`grad_accum_steps`) |
-| checkpoint selection | last only | periodic + a tracked best-val-loss checkpoint |
-| training visibility | loss numbers only | loss numbers + a qualitative text sample every N steps |
-| logging | console only | console + `train_log.txt` |
-| generation repetition | none | repetition penalty + optional greedy mode |
+| corpus | 1,033 books, ~98.55M tokens | 10,000 books (quality-ranked, per MicroCorpus-Builder v3) |
+| tokenizer | 16K, chosen without comparison | benchmarked across 16K/32K/50K (`tokenizer_benchmark.py`) |
+| context | 256 | 512 |
+| position encoding | learned embeddings | RoPE |
+| normalization | LayerNorm | RMSNorm |
+| FFN | GELU, 4x expansion | SwiGLU, ~2.67x expansion (LLaMA-style sizing) |
+| attention | hand-written QK^T/softmax/V | `torch.nn.functional.scaled_dot_product_attention` |
+| model size | ~8.9M params (256 embed / 8 heads / 6 layers) | ~20-30M params, "Option A": 384 embed / 8 heads / 8 layers |
+| dataset loading | full corpus tokenized into RAM (the thing you had to fix) | streaming tokenization straight to memory-mapped `train.bin`/`val.bin` — corpus never fully in RAM |
+| progress tracking | steps only | steps **and** tokens seen |
+| checkpoint metadata | config, tokenizer path, step, losses | + git commit, dataset fingerprint, tokens seen, full train config |
+| hyperparameter changes | edit `config.py` | CLI flags (`--batch-size`, `--steps`, etc.) override `TRAIN_CONFIG` without touching the file |
+| evaluation | loss + eyeballing one sample | `evaluate.py`: perplexity + 7 category prompts + repetition-rate / unique-token-ratio per category |
+| experiment tracking | none | `--experiment-name` snapshots config + log + metrics into `experiments/<name>/` |
 
-Files:
+## Deliberately NOT in v4
 
-- `config.py` — the one place the architecture and training hyperparameters
-  live. `train.py` and `generate.py` both import it, and it's saved inside
-  every checkpoint, so a checkpoint can never end up paired with the wrong
-  architecture.
-- `model.py` — the `MiniGPT` model itself.
-- `train_tokenizer.py` — trains a 16K-vocab BPE tokenizer on `data.txt`.
-- `train.py` — training loop with everything above.
-- `generate.py` — generation with temperature / top-k / top-p.
+Same discipline as v3: no GQA, no MoE, no KV-cache, no instruction tuning.
+Those (and RoPE/SwiGLU's bigger sibling ideas, if v4 justifies them) are v5
+material. Instruction tuning specifically is its own later training stage
+on top of a good v4 base — not something to fold into pretraining.
+
+## Files
+
+- `config.py` — architecture (`CONFIG`), training (`TRAIN_CONFIG`), generation
+  (`GEN_CONFIG`), and evaluation (`EVAL_CONFIG`) settings. `vocab_size`
+  defaults to a placeholder — run `tokenizer_benchmark.py` on the real v4
+  corpus and set it deliberately before training for real.
+- `model.py` — `SaudadeV4`: RoPE + RMSNorm + SwiGLU + SDPA attention,
+  optional gradient checkpointing, tied embeddings, scaled residual-branch
+  init (same discipline as v3, matters more at 8 layers).
+- `tokenizer_benchmark.py` — trains throwaway tokenizers at several vocab
+  sizes and reports compression stats, so 32K (or whatever) is a measured
+  choice, not a guess.
+- `train_tokenizer.py` — trains the real tokenizer at `CONFIG["vocab_size"]`.
+- `prepare_data.py` — streams the corpus straight into memory-mapped
+  `train.bin`/`val.bin` (uint16, since vocab ≤ 65536) — this is your v3 RAM
+  fix, built in from the start instead of patched in afterward.
+- `train.py` — the training loop. Memory-maps `train.bin`/`val.bin`
+  (`np.memmap`, never loads them into RAM), tracks tokens seen alongside
+  steps, writes richer checkpoint metadata, and accepts CLI overrides for
+  the training knobs.
+- `generate.py` — same generation feature set as v3 (temperature, top-k,
+  top-p, repetition penalty, greedy mode); loads architecture from the
+  checkpoint, same as v3.
+- `evaluate.py` — runs 7 fixed category prompts (STORY, DIALOGUE,
+  DESCRIPTION, CONTINUATION, LONG_CONTEXT, RARE_WORDS, REPETITION),
+  reports perplexity plus per-category repetition-rate and
+  unique-token-ratio, writes `evaluation.json`.
+- `utils.py` — git commit lookup, a cheap large-file fingerprint (hashes a
+  bounded sample, not the whole multi-hundred-MB corpus, on every
+  checkpoint), and the experiment-snapshot helper.
 
 ## Running it
 
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.txt   # same as v3: torch, sentencepiece, numpy
 
-# 1. Put your corpus in data.txt (MicroCorpus v2, or whatever you're using)
-#    A small placeholder data.txt is included so the scripts run out of the box.
+# 1. Put your 10,000-book corpus in data.txt
 
-# 2. Train the tokenizer (16K BPE, must match config.py's vocab_size)
+# 2. Benchmark tokenizer vocab sizes, then set CONFIG["vocab_size"] in config.py
+python tokenizer_benchmark.py --vocab-sizes 16000 32000 50000
+
+# 3. Train the real tokenizer at the chosen vocab size
 python train_tokenizer.py
 
-# 3. Train the model
-python train.py
-#    resume a run:
-python train.py --resume checkpoints/checkpoint_5000.pt
+# 4. Tokenize the corpus into memory-mapped train.bin/val.bin
+python prepare_data.py
 
-# 4. Generate
-#    edit PROMPT / TEMPERATURE / TOP_K / TOP_P at the top of generate.py, then:
+# 5. Train (config.py's steps/batch_size are placeholders — check train.py's
+#    startup banner, which recomputes steps/pass and estimated passes from
+#    the ACTUAL token count in train.bin, same idea as v3's sanity check)
+python train.py
+
+#    override a knob without editing config.py:
+python train.py --batch-size 16 --steps 50000
+
+#    resume after a disconnect:
+python train.py --resume checkpoints/checkpoint_20000.pt
+
+#    snapshot this run into experiments/:
+python train.py --experiment-name v4_baseline
+
+# 6. Generate
 python generate.py
+
+# 7. Evaluate against the fixed prompt suite
+python evaluate.py --checkpoint checkpoints/checkpoint_best.pt
 ```
 
-## Notes for Kaggle (2x T4)
+## Notes
 
-- `train.py` auto-detects available GPUs and wraps the model in
-  `nn.DataParallel` when more than one is visible — no changes needed.
-- Mixed precision is on by default when CUDA is available.
-- Checkpoints save every `TRAIN_CONFIG["checkpoint_interval"]` steps to
-  `checkpoints/`, each with model, optimizer, and scaler state plus the
-  step number — so a Kaggle disconnect only costs you back to the last
-  checkpoint, not the whole run. Resume with `--resume`.
-- Before committing to a full v3 training run, run the tokenizer once on
-  the real MicroCorpus v2 and check the actual token count (Section 4 of
-  the Kaggle notebook does this) — `config.py`'s `steps` is already set from
-  the measured 98,574,591-token count (36,000 steps ≈ 3 passes), but if your
-  corpus size changes, recompute and update `steps` accordingly.
-- `train.py`'s startup banner reports dataset stats, model config, the
-  training-step math (tokens/step, steps/pass, approx. passes), and
-  optimizer settings all in one place — check it before committing to a
-  many-hour run. Every checkpoint also stores `dataset_tokens`,
-  `train_tokens`, and `val_tokens`, so `generate.py` (and anything else
-  loading `saudade_v3.pt` later) can report what a model was actually
-  trained on without needing to re-derive it.
-
-## What each new knob does
-
-- **`grad_accum_steps`** (config.py, `TRAIN_CONFIG`) — accumulates gradients
-  over N micro-batches before stepping the optimizer, so effective batch
-  size is `batch_size * grad_accum_steps` without needing more GPU memory.
-- **`checkpoint_best.pt`** — always the checkpoint with the lowest val loss
-  seen so far, updated every eval. Use this one for generation unless you
-  have a specific reason to want a later (possibly slightly overfit) step.
-- **`sample_interval` / `sample_prompt`** — every N steps, `train.py` prints
-  a short generation from the current weights so you can watch it improve
-  qualitatively, not just watch the loss number drop.
-- **`repetition_penalty`** (generate.py) — small models loop a lot without
-  this; 1.2 is a reasonable default, 1.0 disables it.
-- **`greedy`** (generate.py) — ignores temperature/top-k/top-p and always
-  picks the highest-probability token; deterministic, useful for debugging
-  but produces the most repetitive output of any mode (as you'll see if you
-  try it on an undertrained checkpoint).
-
-## Deliberately not in v3
-
-RoPE, GQA, MoE, a real Flash Attention kernel, KV-cache, SwiGLU, other
-modern positional schemes, distributed training, a much larger model,
-instruction tuning, RLHF. All candidates for v4/v5, once v3's numbers are in.
+- **Gradient checkpointing**: `CONFIG["gradient_checkpointing"]` is off by
+  default. The 8-layer/384-dim model is small enough that a 2xT4 should
+  handle a reasonable batch size without it — flip it on only if you hit
+  OOM, since it trades ~30% speed for lower activation memory.
+- **`val_split`** defaults to 2% (v3's notebook fix used 1%, which is thin
+  for computing a stable val loss every eval — 2% is a bit safer while
+  still leaving nearly all of a 10,000-book corpus for training).
+- **Corpus quality**: this repo doesn't include the MicroCorpus-Builder v3
+  pipeline (dedup, boilerplate/OCR-noise detection, quality scoring) —
+  that's upstream of `data.txt`. `prepare_data.py` and `train.py` just
+  assume you're handing them a corpus you already trust.

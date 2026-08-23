@@ -1,42 +1,83 @@
 """
-Saudade v3 — model configuration.
+Saudade v4 — model configuration.
 
-This is the ONLY place the architecture is defined. train.py and generate.py
-both import CONFIG from here, and the trained checkpoint stores a copy of
-this dict alongside its weights — so generation can never end up mismatched
-with the model that produced it (the bug that hit the old generate.py).
+Single source of truth for architecture, same principle as v3: train.py,
+generate.py, and evaluate.py all import CONFIG from here, and it's saved
+into every checkpoint so a checkpoint can never be loaded with the wrong
+architecture.
+
+v4 is "Option A" from the roadmap — the conservative upgrade, not the
+ambitious one. Bigger corpus and a properly modern block (RoPE, RMSNorm,
+SwiGLU, PyTorch's fused attention kernel), but the model itself stays
+deliberately small (~20-30M params) until we know this architecture is
+actually better than v3, not just different.
+
+v3 stays frozen as the baseline — this file lives in a separate saudade_v4/
+directory and never touches saudade_v3/.
 """
 
 CONFIG = {
-    "vocab_size": 16000,     # must match train_tokenizer.py's vocab_size
-    "block_size": 256,       # context length
-    "embed_size": 256,       # embedding / residual stream dimension
-    "heads": 8,              # attention heads (256 / 8 = 32 dims/head)
-    "layers": 6,             # transformer blocks
+    # --- picked after running tokenizer_benchmark.py on the v4 corpus ---
+    # v3 used 16K without benchmarking alternatives. Benchmark 16K/32K/50K
+    # on the actual 10,000-book corpus before committing to a number —
+    # this default is a placeholder, not a decision.
+    "vocab_size": 32000,
+
+    "block_size": 512,       # was 256 in v3
+    "embed_size": 384,       # was 256 in v3          -- Option A
+    "heads": 8,
+    "layers": 8,              # was 6 in v3            -- Option A
     "dropout": 0.1,
+
+    # SwiGLU hidden dim. None = auto-compute as round_up(2/3 * 4*embed_size, 32)
+    # (the standard LLaMA-style SwiGLU sizing, which keeps compute roughly
+    # comparable to a 4x ReLU/GELU FFN despite the extra gate matrix).
+    "ffn_hidden": None,
+
+    "rope_theta": 10000.0,
+
+    # Trades ~30% training speed for a big activation-memory reduction —
+    # worth it if the 8-layer/384-dim model doesn't fit T4 memory at a
+    # reasonable batch size. Off by default; flip on if you hit OOM.
+    "gradient_checkpointing": False,
 }
 
 TRAIN_CONFIG = {
     "batch_size": 32,
-    "grad_accum_steps": 1,     # >1 simulates a larger batch (batch_size * grad_accum_steps)
-    # 98,574,591 actual tokens (MicroCorpus v2, 16K tokenizer) / (batch_size * block_size=8,192
-    # tokens/step) ≈ 12,033 steps/pass. 36,000 steps ≈ 3 passes over the corpus — see the
-    # "estimated passes" line train.py prints at startup, computed from the real token count
-    # rather than hard-coded.
-    "steps": 36000,
-    "eval_interval": 250,      # how often to compute train/val loss
-    "eval_iters": 50,          # batches averaged per eval
+    "grad_accum_steps": 1,
+
+    # Set this from the ACTUAL token count of your v4 corpus (prepare_data.py
+    # prints it, and train.py's startup banner recomputes passes/steps from
+    # whatever train.bin actually contains — this default is not load-bearing,
+    # just a starting point before you've measured the 10,000-book corpus).
+    "steps": 60000,
+
+    "eval_interval": 250,
+    "eval_iters": 50,
+
     "checkpoint_interval": 1000,
-    "sample_interval": 1000,   # how often to print a qualitative sample during training
+    "sample_interval": 1000,
     "sample_prompt": "The night was quiet and",
-    "warmup_steps": 500,       # scaled up for the longer 36k-step run (was 200 for 10k steps)
+
+    "warmup_steps": 1000,
     "max_lr": 3e-4,
     "min_lr": 3e-5,
     "weight_decay": 0.1,
     "grad_clip": 1.0,
-    "val_split": 0.1,
+
+    "val_split": 0.02,       # v3's notebook fix used 1% — 2% is a bit safer at this corpus size
     "seed": 1337,
     "log_file": "train_log.txt",
+
+    # Data files produced by prepare_data.py (memory-mapped — the corpus is
+    # NOT loaded into RAM, same fix you already made for v3).
+    "train_bin": "train.bin",
+    "val_bin": "val.bin",
+
+    # Optional: name a subfolder under experiments/ to snapshot config +
+    # logs + final metrics into after training, for the experiment-tracking
+    # workflow from the roadmap (experiments/v4_rope/, experiments/v4_swiglu/, ...).
+    "experiment_name": None,
 }
 
 GEN_CONFIG = {
@@ -44,6 +85,14 @@ GEN_CONFIG = {
     "temperature": 0.7,
     "top_k": 50,
     "top_p": 0.9,
-    "repetition_penalty": 1.2,  # 1.0 = off; >1.0 discourages repeating recent tokens
-    "greedy": False,            # if True, ignore temperature/top-k/top-p and always take argmax
+    "repetition_penalty": 1.2,
+    "greedy": False,
+}
+
+EVAL_CONFIG = {
+    "max_new_tokens": 80,
+    "temperature": 0.8,
+    "top_k": 50,
+    "repetition_penalty": 1.2,
+    "repetition_window": 4,   # n-gram size used for the repetition-rate metric
 }
