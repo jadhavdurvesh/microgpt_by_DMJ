@@ -2,7 +2,7 @@
 
 <div align="center">
 
-# 🕯️ Saudade V4
+#  Saudade V4
 
 ### A small from-scratch language model with a modern transformer block
 
@@ -17,7 +17,7 @@
 
 ---
 
-## 🌌 What is Saudade V4?
+##  What is Saudade V4?
 
 **Saudade V4** is the fourth major generation of the Saudade from-scratch language-model project.
 
@@ -47,7 +47,7 @@ The model is intentionally still small enough to train and study on relatively a
 
 ---
 
-# 🧭 The Saudade Journey
+#  The Saudade Journey
 
 ```mermaid
 flowchart LR
@@ -66,33 +66,33 @@ V4 is not intended to erase or modify V3. It is a separate experiment.
 
 ---
 
-# 📊 V4 at a Glance
+#  V4 at a Glance
 
 | Metric | Saudade V4 |
 |---|---:|
-| 📚 Books | **1,000** |
-| 🧩 Training tokens | **91,434,783** |
-| 🧪 Validation tokens | **1,866,016** |
-| 🔤 Vocabulary | **32,000** |
-| 🧠 Embedding size | **384** |
-| 🏗️ Transformer layers | **8** |
-| 👁️ Attention heads | **8** |
-| 🪟 Context length | **512** |
-| 🔄 Position encoding | **RoPE** |
-| 📐 Normalization | **RMSNorm** |
-| ⚡ FFN | **SwiGLU** |
-| 🚀 Attention | **PyTorch SDPA** |
-| 🔗 Weight tying | **Yes** |
-| 👀 Tokens seen | **983,040,000** |
-| 🏆 Best validation loss | **3.4639** |
-| 🔢 Final recorded step | **59,999** |
-| 📦 Model scale | **~26.5M parameters** |
+|  Books | **1,000** |
+|  Training tokens | **91,434,783** |
+|  Validation tokens | **1,866,016** |
+|  Vocabulary | **32,000** |
+|  Embedding size | **384** |
+|  Transformer layers | **8** |
+|  Attention heads | **8** |
+|  Context length | **512** |
+|  Position encoding | **RoPE** |
+|  Normalization | **RMSNorm** |
+|  FFN | **SwiGLU** |
+|  Attention | **PyTorch SDPA** |
+|  Weight tying | **Yes** |
+|  Tokens seen | **983,040,000** |
+|  Best validation loss | **3.4639** |
+|  Final recorded step | **59,999** |
+|  Model scale | **~26.5M parameters** |
 
 > **Dataset correction:** V4 uses **1,000 books**. The **10,000-book** corpus belongs to the planned V4.5 expansion.
 
 ---
 
-# 🧠 Architecture
+#  Architecture
 
 V4 replaces several of the simpler architectural choices used by V3.
 
@@ -125,7 +125,7 @@ The approximate model size is **26.5M parameters**.
 
 ---
 
-# 🔬 Why These Changes?
+#  Why These Changes?
 
 ## RoPE
 
@@ -173,28 +173,28 @@ This allows PyTorch to select an optimized attention implementation when support
 
 ---
 
-# 📈 V3 → V4
+#  V3 → V4
 
 | Feature | V3 | V4 |
 |---|---|---|
-| 📚 Corpus | 1,033 books | **1,000 books** |
-| 🔤 Vocabulary | 16K | **32K** |
-| 🪟 Context | 256 | **512** |
-| 🧠 Embedding | 256 | **384** |
-| 🏗️ Layers | 6 | **8** |
-| 👁️ Heads | 8 | **8** |
-| 📍 Position | Learned embeddings | **RoPE** |
-| 📐 Normalization | LayerNorm | **RMSNorm** |
-| ⚡ FFN | GELU, 4× | **SwiGLU, ~2.67×** |
-| 🚀 Attention | Hand-written | **SDPA** |
-| 🔗 Weight tying | Yes | **Yes** |
-| 💾 Dataset loading | RAM-heavy pipeline | **Memory-mapped** |
-| 📊 Progress | Steps | **Steps + tokens seen** |
-| 💾 Checkpoints | Periodic + best | **Periodic + best** |
-| 🔄 Resume | Yes | **Yes** |
-| 🧪 Evaluation | Basic | **Expanded evaluation** |
-| 🔬 Experiment tracking | Limited | **Experiment snapshots** |
-| 🏆 Best val loss | **3.7963** | **3.4639** |
+|  Corpus | 1,033 books | **1,000 books** |
+|  Vocabulary | 16K | **32K** |
+|  Context | 256 | **512** |
+|  Embedding | 256 | **384** |
+|  Layers | 6 | **8** |
+|  Heads | 8 | **8** |
+|  Position | Learned embeddings | **RoPE** |
+|  Normalization | LayerNorm | **RMSNorm** |
+|  FFN | GELU, 4× | **SwiGLU, ~2.67×** |
+|  Attention | Hand-written | **SDPA** |
+|  Weight tying | Yes | **Yes** |
+|  Dataset loading | RAM-heavy pipeline | **Memory-mapped** |
+|  Progress | Steps | **Steps + tokens seen** |
+|  Checkpoints | Periodic + best | **Periodic + best** |
+|  Resume | Yes | **Yes** |
+|  Evaluation | Basic | **Expanded evaluation** |
+|  Experiment tracking | Limited | **Experiment snapshots** |
+|  Best val loss | **3.7963** | **3.4639** |
 
 ### Validation-loss improvement
 
@@ -221,7 +221,7 @@ So V4's recorded best validation loss is lower than V3's baseline.
 
 ---
 
-# 📚 Dataset
+#  Dataset
 
 ## V4 Dataset
 
@@ -257,7 +257,7 @@ The **10,000-book corpus is V4.5**, not V4.
 
 ---
 
-# 🔁 Why Did V4 See 983M Tokens?
+#  Why Did V4 See 983M Tokens?
 
 A common point of confusion is:
 
@@ -286,7 +286,7 @@ This is normal for language-model training.
 
 ---
 
-# 🧮 Training Exposure
+#  Training Exposure
 
 ```mermaid
 xychart-beta
@@ -303,7 +303,7 @@ The distinction is:
 
 ---
 
-# 🏆 Training Result
+#  Training Result
 
 V4's final checkpoint reports:
 
@@ -335,7 +335,7 @@ exp(3.4639) ≈ 31.99
 
 ---
 
-# 📉 V3 vs V4 Validation Loss
+#  V3 vs V4 Validation Loss
 
 ```mermaid
 xychart-beta
@@ -361,7 +361,7 @@ V3:
 
 ---
 
-# 🧩 Tokenizer
+#  Tokenizer
 
 V4 uses a **32,000-token SentencePiece tokenizer**.
 
@@ -390,7 +390,7 @@ alongside the checkpoint.
 
 ---
 
-# 🎲 Generation
+#  Generation
 
 V4 retains the generation controls introduced in V3.
 
@@ -416,7 +416,7 @@ max_new_tokens      = 500
 
 ---
 
-# 🧪 Greedy vs Sampling
+#  Greedy vs Sampling
 
 ### Sampling
 
@@ -441,7 +441,7 @@ It is useful for deterministic experiments, but it can become more repetitive.
 
 ---
 
-# ✍️ Example Generation
+#  Example Generation
 
 Prompt:
 
@@ -465,7 +465,7 @@ These examples are qualitative demonstrations, not benchmark scores.
 
 ---
 
-# ⏱️ Long Generation
+# ⏱ Long Generation
 
 The default output length is:
 
@@ -495,7 +495,7 @@ Long generation is also relatively slow because the current implementation does 
 
 ---
 
-# ⚡ V4.5 Roadmap
+#  V4.5 Roadmap
 
 V4.5 is the next major optimization/scaling experiment.
 
@@ -521,7 +521,7 @@ flowchart LR
 
 ## Planned V4.5 improvements
 
-### 📚 10,000-book corpus
+###  10,000-book corpus
 
 The main dataset target is:
 
@@ -535,7 +535,7 @@ The final token count must be measured after the corpus is actually constructed.
 
 ---
 
-### ⚡ KV Cache
+###  KV Cache
 
 V4.5 should implement a Key-Value cache for autoregressive generation.
 
@@ -545,13 +545,13 @@ This should be one of the largest inference-speed improvements.
 
 ---
 
-### 🌊 Streaming generation
+###  Streaming generation
 
 V4.5 should support streaming output so generated tokens can appear progressively.
 
 ---
 
-### 🚀 Attention optimization
+###  Attention optimization
 
 Potential areas:
 
@@ -563,7 +563,7 @@ Potential areas:
 
 ---
 
-### 🪟 Context experiments
+###  Context experiments
 
 Potential context sizes:
 
@@ -578,7 +578,7 @@ The final choice should be determined by memory and training benchmarks.
 
 ---
 
-### 📊 Better evaluation
+###  Better evaluation
 
 V4.5 should measure more than validation loss.
 
@@ -599,18 +599,18 @@ Long-context behavior
 
 ---
 
-# 🚫 Deliberately Not in V4
+#  Deliberately Not in V4
 
 V4 intentionally does **not** attempt to implement every modern LLM technique.
 
 Not included:
 
-- ❌ GQA
-- ❌ MoE
-- ❌ KV cache
-- ❌ Instruction tuning
-- ❌ RLHF
-- ❌ Large-scale instruction datasets
+-  GQA
+-  MoE
+-  KV cache
+-  Instruction tuning
+-  RLHF
+-  Large-scale instruction datasets
 
 These are reserved for later experiments where they make sense.
 
@@ -618,7 +618,7 @@ Instruction tuning is especially intended to be a separate stage performed after
 
 ---
 
-# 🏗️ Project Structure
+#  Project Structure
 
 ```text
 saudade_v4/
@@ -651,7 +651,7 @@ saudade_v4/
 
 ---
 
-# 📄 File Guide
+#  File Guide
 
 | File | Purpose |
 |---|---|
@@ -667,7 +667,7 @@ saudade_v4/
 
 ---
 
-# 💾 Memory-Efficient Dataset Pipeline
+#  Memory-Efficient Dataset Pipeline
 
 One of the major engineering lessons from the previous versions was dataset memory usage.
 
@@ -689,7 +689,7 @@ This is especially important as the dataset grows toward the V4.5 10,000-book ta
 
 ---
 
-# 💾 Why Memory Mapping Matters
+#  Why Memory Mapping Matters
 
 A large text corpus can consume substantial RAM after tokenization.
 
@@ -727,7 +727,7 @@ This keeps dataset storage largely outside normal process RAM usage.
 
 ---
 
-# 🔄 Training Workflow
+#  Training Workflow
 
 ```mermaid
 flowchart TD
@@ -747,7 +747,7 @@ flowchart TD
 
 ---
 
-# 🚀 Quick Start
+#  Quick Start
 
 Install dependencies:
 
@@ -828,7 +828,7 @@ python evaluate.py --checkpoint checkpoints/checkpoint_best.pt
 
 ---
 
-# 🧪 Evaluation Philosophy
+#  Evaluation Philosophy
 
 V4 is intended to be evaluated quantitatively and qualitatively.
 
@@ -850,7 +850,7 @@ The goal is to make future comparisons between V4, V4.5 and later versions more 
 
 ---
 
-# 📋 Suggested Evaluation Categories
+#  Suggested Evaluation Categories
 
 The V4 evaluation design includes categories such as:
 
@@ -868,7 +868,7 @@ These probe different aspects of the model rather than relying on a single promp
 
 ---
 
-# 🔍 What V4 Is Actually Testing
+#  What V4 Is Actually Testing
 
 V4 is not simply:
 
@@ -893,7 +893,7 @@ Therefore V4 is a meaningful engineering/model-generation comparison, but not a 
 
 ---
 
-# 📊 Key Numbers
+#  Key Numbers
 
 ```text
                     SAUDADE V4
@@ -936,7 +936,7 @@ Final step              59,999
 
 ---
 
-# 🧭 Why V3 Remains Important
+#  Why V3 Remains Important
 
 V3 is the frozen baseline.
 
@@ -966,7 +966,7 @@ But V4 also changes the architecture and tokenizer, so the result should be inte
 
 ---
 
-# 🔬 Research Questions
+#  Research Questions
 
 V4 establishes the baseline for the next experiments.
 
@@ -985,7 +985,7 @@ V4.5 should answer:
 
 ---
 
-# 🛣️ Roadmap
+#  Roadmap
 
 ```mermaid
 flowchart LR
@@ -1034,7 +1034,7 @@ These are deliberately outside the current V4 scope.
 
 ---
 
-# 📦 Release
+#  Release
 
 The V4 inference release should include the model and the exact tokenizer required to decode it.
 
@@ -1058,7 +1058,7 @@ The training workspace does not need to be distributed as the model release.
 
 ---
 
-# ⚠️ Important Notes
+#  Important Notes
 
 ### Tokenizer
 
@@ -1084,7 +1084,7 @@ The 10,000-book corpus is the V4.5 target.
 
 ---
 
-# 🤝 Contributing
+#  Contributing
 
 Saudade is an experimental research project.
 
@@ -1103,7 +1103,7 @@ For substantial architecture changes, keep experiments isolated so results remai
 
 ---
 
-# 📜 Philosophy
+#  Philosophy
 
 Saudade is intentionally built incrementally.
 
@@ -1139,7 +1139,7 @@ Every version should answer a useful question.
 
 ---
 
-# 🕯️ Saudade
+#  Saudade
 
 > *Saudade* describes a deep, bittersweet sense of longing for something absent.
 
