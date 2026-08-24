@@ -1,197 +1,239 @@
-Licensor: DMJ Labs
+DMJ COMMUNITY LICENSE (DCL)
+Version 1.0
+
+Copyright © DMJ Labs
+
 Project: Saudade
+Licensor: DMJ Labs
+
+Contact for permissions:
+jadhavdurvesh65@gmail.com
+
+
+1. DEFINITIONS
+
+"Software" means the source code, documentation, model files,
+configuration files, assets, and other files in the Saudade
+repository, excluding anything identified as a Restricted Asset.
+
+"Licensor" means DMJ Labs.
+
+"You" means anyone using, copying, modifying, or distributing
+the Software under this license.
+
+"Contribution" means any code, documentation, model-related
+material, or other material You submit to the project.
+
+"Fork" means a copy of the Software, modified or unmodified,
+maintained separately from the original project.
+
+"Restricted Asset" means any file, dataset, model, checkpoint,
+asset, or other material specifically identified as restricted
+by the Licensor.
+
+"Exempt Output" means any output produced by running, training,
+evaluating, or otherwise using the Software that is specifically
+identified by the Licensor as exempt from the requirements of
+this license.
+
+At the time of this release:
+
 Restricted Assets: None
 Exempt Outputs: None
-Contact for permissions: jadhavdurvesh65@gmail.com
 
----
 
-# DMJ Community License (DCL)
+2. GRANT OF RIGHTS
 
-**Version 1.0**
+Subject to the terms of this license, DMJ Labs grants You a
+worldwide, royalty-free, non-exclusive license to:
 
----
+- Use the Software for any purpose, including commercial purposes.
+- Study, analyze, modify, and learn from the Software.
+- Use the Software for research, experimentation, training,
+  evaluation, and development.
+- Fork and modify the Software, including creating derivative works.
+- Contribute to the project.
+- Redistribute the Software or derivative versions, subject to
+  the requirements of Section 3.
 
-## 1. Definitions
 
-- **"Software"** means the source code, documentation, model files, configuration files, assets, and other files in this repository, excluding anything listed above as a **Restricted Asset**, which has its own rules under Section 5.
+3. ATTRIBUTION AND RESTRICTIONS
 
-- **"Licensor"** means DMJ Labs.
+When using, modifying, forking, or redistributing the Software
+or a derivative of it, You must comply with the following:
 
-- **"You"** means anyone using, copying, modifying, or distributing the Software under this license.
+A. You must not claim the original Saudade project or its original
+   work as entirely your own.
 
-- **"Contribution"** means any code, documentation, model-related material, or other material You submit back to this project (for example, through a pull request).
+B. Any redistribution of the Software or a derivative or fork must
+   include clear attribution to the original project.
 
-- **"Fork"** means a copy of the Software, modified or not, maintained separately from the original project.
+C. The attribution must identify:
 
-- **"Restricted Asset"** means any file, dataset, model, checkpoint, asset, or other material specifically named as such in the manifest at the top of this license. This project currently has none.
-
-- **"Exempt Output"** means any output produced by running, training, evaluating, or otherwise using the Software that is specifically named above as exempt from the share-alike and attribution requirements in Section 3. This project currently has none.
-
----
-
-## 2. What You're Allowed To Do
-
-Subject to Sections 3 and 5, DMJ Labs grants You a worldwide, royalty-free, non-exclusive license to:
-
-- **Use** the Software for any purpose, including commercial purposes.
-
-- **Study and learn from** the Software, including reading, analyzing, modifying, and teaching from its code, architecture, training methods, and design.
-
-- **Contribute** back to the project. Contributions are governed by Section 6.
-
-- **Fork and modify** the Software, including creating derivative works and experimental versions.
-
-- **Redistribute** the Software or Your modified version of it, subject to the attribution requirements in Section 3.
-
-- **Train, run, evaluate, and experiment with** the Software and its associated components, subject to the terms of this license and any applicable restrictions on Restricted Assets.
-
----
-
-## 3. What You're Not Allowed To Do
-
-When using, forking, modifying, or redistributing the Software or any derivative of it, You must NOT:
-
-### a. Claim it as your own original work
-
-You must not represent the Software, the Saudade project, or a modified version of it as something You independently created entirely from scratch when it is based on this project.
-
-Where You did not create the original project, You must clearly acknowledge its origin.
-
-### b. Redistribute a modified version without attribution
-
-Any redistribution of the Software, or a derivative or fork of it, must include:
-
-- A clear statement that it is based on or forked from **Saudade**.
-- The name **DMJ Labs** as the original Licensor.
-- A link to the original Saudade project, if publicly available.
-- A copy of this license.
+   - Saudade as the original project.
+   - DMJ Labs as the original Licensor.
+   - The original project repository, when publicly available.
+   - A copy of this license.
 
 A suitable attribution notice is:
 
-> This project is based on Saudade by DMJ Labs and is distributed under the DMJ Community License (DCL).
+"This project is based on Saudade by DMJ Labs and is distributed
+under the DMJ Community License (DCL)."
 
-### c. Remove or obscure attribution
+D. You must not intentionally remove or obscure copyright notices,
+   attribution notices, license notices, or other notices identifying
+   DMJ Labs or Saudade.
 
-You must not remove or intentionally obscure:
+E. You must not represent a modified or derivative version as the
+   official Saudade project or imply that DMJ Labs endorses it
+   without explicit permission.
 
-- Copyright notices.
-- Attribution notices.
-- The name of DMJ Labs.
-- Notices identifying Saudade as the original project.
-- This license.
 
-These notices must remain present in redistributed copies and derivative works where applicable.
-
----
-
-## 4. Exempt Outputs
+4. OUTPUTS
 
 This project currently has no Exempt Outputs.
 
-If that changes — for example, if a particular model output, generated dataset, benchmark result, trained checkpoint, or other result is intentionally released under separate terms from the Software — the manifest at the top of this license may be updated to identify that material.
+Outputs generated through use of the Software are not automatically
+owned by DMJ Labs solely because the Software was used to produce them.
 
-Any specifically identified Exempt Output will be governed according to the terms stated for it rather than the general output-related requirements of this license.
+However, this provision does not grant rights to third-party
+materials, copyrighted source material, datasets, or other content
+that You do not have the right to use or redistribute.
 
-Unless explicitly identified as an Exempt Output, You should not assume that a particular generated artifact has been excluded from this license.
+If DMJ Labs later identifies specific outputs as Exempt Outputs,
+those outputs may be listed separately by the Licensor and governed
+by their stated terms.
 
----
 
-## 5. Restricted Assets
+5. RESTRICTED ASSETS
 
 This project currently has no Restricted Assets.
 
-If that changes — for example, if a dataset, proprietary material, model component, key material, third-party asset, or other material is added to the repository that should not receive the general license grant in Section 2 — it may be identified in the manifest at the top of this license.
+If a dataset, model component, checkpoint, proprietary asset,
+key material, third-party material, or other resource is later
+identified as a Restricted Asset, the terms applicable to that
+asset will be stated separately by the Licensor.
 
-Specific terms applicable to such Restricted Assets will be defined in this section or in an accompanying notice.
+Restricted Assets are excluded from the general license grant
+provided in Section 2.
 
-Where a Restricted Asset has separate licensing terms, those terms take precedence for that asset.
+Where a Restricted Asset has separate licensing terms, those
+terms take precedence for that asset.
 
-You are responsible for complying with applicable third-party rights and licenses associated with materials that are not owned by DMJ Labs.
+You are responsible for complying with applicable third-party
+rights and licenses.
 
----
 
-## 6. Contributions
+6. CONTRIBUTIONS
 
 By submitting a Contribution to Saudade, You agree that:
 
 - You have the legal right to submit the Contribution.
-- The Contribution is Your own work, or You have obtained the necessary permission to submit it.
-- You license Your Contribution to DMJ Labs under this same license so that it may be incorporated into, modified, and redistributed as part of the Software.
-- DMJ Labs may accept, reject, modify, combine, or otherwise manage Your Contribution at its discretion.
+- The Contribution is your own work or you have obtained the
+  necessary permission to submit it.
+- You license your Contribution to DMJ Labs under this same license
+  so that it may be incorporated into, modified, and redistributed
+  as part of the Software.
+- DMJ Labs may accept, reject, modify, combine, or otherwise manage
+  Contributions at its discretion.
 
-Submitting a Contribution does not automatically grant You ownership of the Saudade project or any other material created by DMJ Labs.
+Submitting a Contribution does not transfer ownership of the
+Saudade project or other original DMJ Labs materials to the
+contributor.
 
----
 
-## 7. No Trademark Rights
+7. NO TRADEMARK RIGHTS
 
-This license does not grant You rights to the names, logos, branding, or trademarks of DMJ Labs or Saudade, except where use is reasonably necessary to satisfy the attribution requirements of Section 3.
+This license does not grant You rights to the names, logos,
+branding, or trademarks of DMJ Labs or Saudade.
 
-You may state that a project is based on or derived from Saudade when such attribution is accurate.
+You may accurately state that a project is based on, derived from,
+or forked from Saudade when such attribution is required.
 
-You may not imply that DMJ Labs endorses, sponsors, certifies, or officially supports Your modified project unless You have separate written permission to make such a claim.
+You may not imply that DMJ Labs officially endorses, sponsors,
+certifies, or supports your modified project without separate
+written permission.
 
----
 
-## 8. Disclaimer of Warranty & Limitation of Liability
+8. THIRD-PARTY MATERIALS
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT, ACCURACY, RELIABILITY, OR PERFORMANCE.
+Saudade may interact with, depend upon, or be distributed alongside
+software, datasets, libraries, models, or other materials created
+by third parties.
 
-SAUDADE IS AN EXPERIMENTAL SOFTWARE AND MACHINE-LEARNING PROJECT. DMJ LABS DOES NOT WARRANT THAT THE SOFTWARE, MODEL, TRAINING CODE, DATA PIPELINE, GENERATED OUTPUTS, OR OTHER PROJECT COMPONENTS WILL BE ERROR-FREE, SECURE, ACCURATE, UNINTERRUPTED, OR SUITABLE FOR ANY PARTICULAR PURPOSE.
+Nothing in this license grants rights to third-party materials
+beyond the rights provided by their respective licenses.
 
-IN NO EVENT SHALL DMJ LABS BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR INABILITY TO USE THE SOFTWARE.
+Where a third-party component has separate licensing terms, those
+terms continue to apply to that component.
 
-YOU ARE RESPONSIBLE FOR EVALUATING THE SOFTWARE AND ANY OUTPUTS GENERATED BY IT BEFORE USING THEM IN APPLICATIONS OR SERVICES.
+You are responsible for reviewing and complying with applicable
+third-party licenses and rights.
 
----
 
-## 9. Termination
+9. DISCLAIMER OF WARRANTY
 
-Your rights under this license terminate automatically if You materially breach Section 3 or Section 5 and fail to cure the breach within 30 days after receiving written notice from DMJ Labs.
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, NON-INFRINGEMENT,
+ACCURACY, RELIABILITY, SECURITY, OR PERFORMANCE.
 
-Upon termination, You must stop exercising the rights granted under this license, except that properly licensed copies distributed to third parties before termination remain governed by the applicable license terms unless otherwise required by law.
+SAUDADE IS AN EXPERIMENTAL SOFTWARE AND MACHINE-LEARNING PROJECT.
+DMJ LABS DOES NOT WARRANT THAT THE SOFTWARE, MODEL, TRAINING CODE,
+DATA PIPELINE, GENERATED OUTPUTS, OR OTHER PROJECT COMPONENTS
+WILL BE ERROR-FREE, SECURE, ACCURATE, UNINTERRUPTED, OR SUITABLE
+FOR ANY PARTICULAR PURPOSE.
 
-Sections 7 and 8 survive termination.
 
----
+10. LIMITATION OF LIABILITY
 
-## 10. License Changes
+IN NO EVENT SHALL DMJ LABS BE LIABLE FOR ANY CLAIM, DAMAGES, OR
+OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR
+OTHERWISE, ARISING FROM, OUT OF, OR IN CONNECTION WITH THE
+SOFTWARE OR THE USE OR INABILITY TO USE THE SOFTWARE.
 
-DMJ Labs may publish future versions of the DMJ Community License for future releases of Saudade.
+YOU ARE RESPONSIBLE FOR EVALUATING THE SOFTWARE AND ANY OUTPUTS
+GENERATED BY IT BEFORE USING THEM IN APPLICATIONS, SERVICES,
+RESEARCH, OR OTHER SYSTEMS.
 
-Unless explicitly stated otherwise, a particular version of Saudade remains governed by the version of the license included with that release.
 
-A future version of the project may use a newer version of the DMJ Community License without retroactively changing the license applicable to previously released versions.
+11. TERMINATION
 
----
+Your rights under this license terminate automatically if You
+materially breach Section 3 or Section 5 and fail to cure the
+breach within 30 days after receiving written notice from DMJ Labs.
 
-## 11. Third-Party Materials
+Upon termination, You must stop exercising the rights granted
+under this license, except that properly licensed copies already
+distributed to third parties remain governed by the applicable
+license terms unless otherwise required by law.
 
-Saudade may interact with, depend upon, or be distributed alongside software, datasets, libraries, models, or other materials created by third parties.
+Sections 7, 9, and 10 survive termination.
 
-Nothing in this license grants rights to third-party materials beyond the rights granted by their respective licenses.
 
-Where a third-party component has separate licensing terms, those terms continue to apply to that component.
+12. LICENSE VERSIONS
 
-You are responsible for reviewing and complying with applicable third-party licenses.
+DMJ Labs may publish future versions of the DMJ Community License
+for future releases of Saudade.
 
----
+Unless explicitly stated otherwise, a specific release of Saudade
+remains governed by the version of the license distributed with
+that release.
 
-## 12. Contact
+A future version of Saudade may use a newer version of the DMJ
+Community License without retroactively changing the license
+applicable to previously released versions.
 
-For licensing questions, permission requests, or other licensing matters, contact:
+
+13. CONTACT
+
+For licensing questions, permission requests, or other licensing
+matters, contact:
 
 jadhavdurvesh65@gmail.com
 
----
 
-## Copyright
+END OF DMJ COMMUNITY LICENSE
 
 Copyright © DMJ Labs.
-
-Saudade and associated original project materials are protected by applicable copyright law.
-
----
-
-*This is the DMJ Community License (DCL), version 1.0, as applied to the Saudade project.*
+Saudade is a project of DMJ Labs.
