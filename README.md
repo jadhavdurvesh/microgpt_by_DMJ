@@ -11,7 +11,7 @@
 [![Release](https://img.shields.io/github/v/release/jadhavdurvesh/microgpt_by_DMJ?label=release)](https://github.com/jadhavdurvesh/microgpt_by_DMJ/releases)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.x-ee4c2c)](https://pytorch.org/)
-[![License](https://img.shields.io/github/license/jadhavdurvesh/microgpt_by_DMJ)](https://github.com/jadhavdurvesh/microgpt_by_DMJ)
+[![License](https://img.shields.io/badge/License-DMJ%20Community%20License%20(DCL)-blue)](LICENSE)
 
 </div>
 
